@@ -3,11 +3,21 @@
     "node": true,
     "es2021": true,
     "jest": true,
-    "cypress/globals": true
+    "cypress/globals": true,
+    "browser": true
   },
-  "extends": ["eslint:recommended", "prettier", "plugin:jest/recommended"],
+  "extends": ["eslint:recommended", "prettier", "plugin:jest/recommended", "plugin:react/recommended"],
+  "parser": "@babel/eslint-parser",
   "parserOptions": {
-    "ecmaVersion": "latest"
+    "ecmaVersion": "latest",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "sourceType": "module",
+    "requireConfigFile": false,
+    "babelOptions": {
+      "presets": ["@babel/preset-env", "@babel/preset-react"]
+    }
   },
   "rules": {
     "cypress/no-assigning-return-values": "error",
@@ -21,10 +31,18 @@
     "jest/no-identical-title": "off",
     "jest/prefer-to-have-length": "warn",
     "jest/valid-expect": "error",
-    "jest/expect-expect": "off"
+    "jest/expect-expect": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
   },
   "globals": {
     "jest": true
   },
-  "plugins": ["jest", "cypress"]
+  "plugins": ["jest", "cypress", "react"],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }
 }

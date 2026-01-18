@@ -1,12 +1,35 @@
-const d3 = require('d3')
-const { default: d3tip } = require('d3-tip')
+// Use dynamic imports for d3 and d3-tip since they're ESM
+let d3Promise = null
+let d3tipPromise = null
+
+async function getD3() {
+  if (!d3Promise) {
+    d3Promise = import('d3').then(m => m.default || m)
+  }
+  return d3Promise
+}
+
+async function getD3Tip() {
+  if (!d3tipPromise) {
+    const d3tipModule = await import('d3-tip')
+    d3tipPromise = d3tipModule.default || d3tipModule
+  }
+  return d3tipPromise
+}
 const Chance = require('chance')
 const _ = require('lodash/core')
 
 const RingCalculator = require('../util/ringCalculator')
 const AutoComplete = require('../util/autoComplete')
 const config = require('../config')
-const featureToggles = config().featureToggles
+const configResult = config()
+// #region agent log
+fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/graphing/radar.js:25',message:'Config result check',data:{hasFeatureToggles:'featureToggles' in configResult,configKeys:Object.keys(configResult),featureTogglesType:typeof configResult.featureToggles},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+// #endregion
+const featureToggles = configResult?.featureToggles || {}
+// #region agent log
+fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/graphing/radar.js:26',message:'FeatureToggles check',data:{isUndefined:featureToggles===undefined,isNull:featureToggles===null,hasUIRefresh:'UIRefresh2022' in (featureToggles||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+// #endregion
 const { plotRadarBlips } = require('./blips')
 const { graphConfig, getGraphSize } = require('./config')
 
@@ -33,16 +56,9 @@ const ANIMATION_DURATION = 1000
 const Radar = function (size, radar) {
   const CENTER = size / 2
   var svg, radarElement, quadrantButtons, buttonsGroup, header, alternativeDiv
-
-  var tip = d3tip()
-    .attr('class', 'd3-tip')
-    .html(function (text) {
-      return text
-    })
-
-  tip.direction(function () {
-    return 'n'
-  })
+  var tip = null  // Will be initialized in plot() after d3/d3tip are loaded
+  var d3 = null   // Will be set in plot() after loading
+  var d3tip = null // Will be set in plot() after loading
 
   var ringCalculator = new RingCalculator(radar.rings().length, CENTER)
 
@@ -61,7 +77,10 @@ const Radar = function (size, radar) {
       endY = startY
       startY = aux
     }
-    const strokeWidth = featureToggles.UIRefresh2022 ? graphConfig.quadrantsGap : 10
+    // #region agent log
+    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/graphing/radar.js:73',message:'Before accessing UIRefresh2022',data:{featureTogglesUndefined:featureToggles===undefined,featureTogglesNull:featureToggles===null,featureTogglesType:typeof featureToggles},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+    // #endregion
+    const strokeWidth = featureToggles?.UIRefresh2022 ? graphConfig.quadrantsGap : 10
 
     quadrantGroup
       .append('line')
@@ -495,7 +514,7 @@ const Radar = function (size, radar) {
 
     d3.selectAll('.quadrant-group').transition().duration(ANIMATION_DURATION).attr('transform', 'scale(1)')
 
-    if (featureToggles.UIRefresh2022) {
+    if (featureToggles?.UIRefresh2022) {
       d3.select('#radar-plot').attr('width', size).attr('height', size)
       d3.selectAll(`.quadrant-bg-images`).each(function () {
         this.classList.remove('hidden')
@@ -691,7 +710,7 @@ const Radar = function (size, radar) {
 
     var translateX = ((-1 * (1 + adjustX) * size) / 2) * (scale - 1) + -adjustX * (1 - scale / 2) * size
     var translateY = -1 * (1 - adjustY) * (size / 2 - 7) * (scale - 1) - ((1 - adjustY) / 2) * (1 - scale / 2) * size
-    if (featureToggles.UIRefresh2022) {
+    if (featureToggles?.UIRefresh2022) {
       translateY = 0
     }
 
@@ -732,9 +751,10 @@ const Radar = function (size, radar) {
     }
   }
 
-  self.init = function () {
+  self.init = async function () {
+    const d3 = await getD3()
     radarElement = d3.select('#radar')
-    if (!featureToggles.UIRefresh2022) {
+    if (!featureToggles?.UIRefresh2022) {
       const selector = 'body'
       radarElement = d3.select(selector).append('div').attr('id', 'radar')
     }
@@ -762,7 +782,23 @@ const Radar = function (size, radar) {
     })
   }
 
-  self.plot = function () {
+  self.plot = async function () {
+    // Load d3 and d3tip dynamically
+    d3 = await getD3()
+    const d3tipConstructor = await getD3Tip()
+    
+    // Initialize tip now that d3tip is loaded
+    if (!tip) {
+      tip = d3tipConstructor()
+        .attr('class', 'd3-tip')
+        .html(function (text) {
+          return text
+        })
+      tip.direction(function () {
+        return 'n'
+      })
+    }
+    
     var rings, quadrants, alternatives, currentSheet
 
     rings = radar.rings()
@@ -773,13 +809,13 @@ const Radar = function (size, radar) {
     const radarHeader = d3.select('main .graph-header')
     const radarFooter = d3.select('main .graph-footer')
 
-    renderBanner(renderFullRadar)
+    await renderBanner(renderFullRadar)
 
-    if (featureToggles.UIRefresh2022) {
-      renderQuadrantSubnav(radarHeader, quadrants, renderFullRadar)
-      renderSearch(radarHeader, quadrants)
-      renderAlternativeRadars(radarFooter, alternatives, currentSheet)
-      renderQuadrantTables(quadrants, rings)
+    if (featureToggles?.UIRefresh2022) {
+      await renderQuadrantSubnav(radarHeader, quadrants, renderFullRadar)
+      await renderSearch(radarHeader, quadrants)
+      await renderAlternativeRadars(radarFooter, alternatives, currentSheet)
+      await renderQuadrantTables(quadrants, rings)
       renderButtons(radarFooter)
 
       const landingPageElements = document.querySelectorAll('main .home-page')
@@ -797,7 +833,7 @@ const Radar = function (size, radar) {
 
     svg = radarElement.append('svg').call(tip)
 
-    if (featureToggles.UIRefresh2022) {
+    if (featureToggles?.UIRefresh2022) {
       const legendHeight = 40
       radarElement.style('height', size + legendHeight + 'px')
       svg.attr('id', 'radar-plot').attr('width', size).attr('height', size)
@@ -809,28 +845,28 @@ const Radar = function (size, radar) {
         .attr('height', size + 14)
     }
 
-    _.each(quadrants, function (quadrant) {
+    for (const quadrant of quadrants) {
       let quadrantGroup
-      if (featureToggles.UIRefresh2022) {
-        quadrantGroup = renderRadarQuadrants(size, svg, quadrant, rings, ringCalculator, tip)
+      if (featureToggles?.UIRefresh2022) {
+        quadrantGroup = await renderRadarQuadrants(size, svg, quadrant, rings, ringCalculator, tip)
         plotLines(quadrantGroup, quadrant)
         const ringTextGroup = quadrantGroup.append('g')
         plotRingNames(ringTextGroup, rings, quadrant)
         plotRadarBlips(quadrantGroup, rings, quadrant, tip)
-        renderMobileView(quadrant)
-        addQuadrantNameInPdfView(quadrant.order, quadrant.quadrant.name())
+        await renderMobileView(quadrant)
+        await addQuadrantNameInPdfView(quadrant.order, quadrant.quadrant.name())
       } else {
         quadrantGroup = plotQuadrant(rings, quadrant)
         plotLines(quadrantGroup, quadrant)
         plotTexts(quadrantGroup, rings, quadrant)
         plotBlips(quadrantGroup, rings, quadrant)
       }
-    })
+    }
 
-    if (featureToggles.UIRefresh2022) {
-      renderRadarLegends(radarElement, hasMovementData(quadrants))
+    if (featureToggles?.UIRefresh2022) {
+      await renderRadarLegends(radarElement, hasMovementData(quadrants))
       hideTooltipOnScroll(tip)
-      addRadarLinkInPdfView()
+      await addRadarLinkInPdfView()
     }
   }
 

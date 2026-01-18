@@ -1,4 +1,12 @@
-const d3 = require('d3')
+// Use dynamic import for d3 since it's ESM
+let d3Promise = null
+async function getD3() {
+  if (!d3Promise) {
+    d3Promise = import('d3').then(m => m.default || m)
+  }
+  return d3Promise
+}
+
 const { getElementWidth, getElementHeight, decodeHTML } = require('../../util/htmlUtil')
 const { toRadian } = require('../../util/mathUtils')
 const { getRingIdString } = require('../../util/stringUtil')
@@ -19,7 +27,8 @@ let prevLeft, prevTop
 let quadrantScrollHandlerReference
 let scrollFlag = false
 
-function selectRadarQuadrant(order, startAngle, name) {
+async function selectRadarQuadrant(order, startAngle, name) {
+  const d3 = await getD3()
   const noOfBlips = d3.selectAll('.quadrant-group-' + order + ' .blip-link').size()
   d3.select('#radar').classed('no-blips', noOfBlips === 0)
 
@@ -315,15 +324,16 @@ function renderRadarQuadrantName(quadrant, parentGroup, tip) {
   ctaArrow.attr('transform', `translate(${ctaArrowXOffset}, ${ctaArrowYOffset})`)
 }
 
-function renderRadarQuadrants(size, svg, quadrant, rings, ringCalculator, tip) {
+async function renderRadarQuadrants(size, svg, quadrant, rings, ringCalculator, tip) {
+  const d3 = await getD3()
   const quadrantGroup = svg
     .append('g')
     .attr('class', 'quadrant-group quadrant-group-' + quadrant.order)
     .on('mouseover', mouseoverQuadrant.bind({}, quadrant.order))
     .on('mouseout', mouseoutQuadrant.bind({}, quadrant.order))
-    .on('click', selectRadarQuadrant.bind({}, quadrant.order, quadrant.startAngle, quadrant.quadrant.name()))
+    .on('click', () => { selectRadarQuadrant(quadrant.order, quadrant.startAngle, quadrant.quadrant.name()) })
     .on('keydown', function (e) {
-      if (e.key === 'Enter') selectRadarQuadrant(quadrant.order, quadrant.startAngle, quadrant.quadrant.name())
+      if (e.key === 'Enter') { selectRadarQuadrant(quadrant.order, quadrant.startAngle, quadrant.quadrant.name()) }
     })
 
   const rectCoordMap = {
@@ -390,7 +400,8 @@ function renderRadarQuadrants(size, svg, quadrant, rings, ringCalculator, tip) {
   return quadrantGroup
 }
 
-function renderRadarLegends(radarElement, hasMovements) {
+async function renderRadarLegends(radarElement, hasMovements) {
+  const d3 = await getD3()
   const legendsContainer = radarElement.append('div').classed('radar-legends', true)
 
   const newImage = legendsContainer
@@ -432,7 +443,8 @@ function renderRadarLegends(radarElement, hasMovements) {
   }
 }
 
-function renderMobileView(quadrant) {
+async function renderMobileView(quadrant) {
+  const d3 = await getD3()
   const quadrantBtn = d3.select('.all-quadrants-mobile').append('button')
   quadrantBtn
     .attr('class', 'all-quadrants-mobile--btn')

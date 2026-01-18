@@ -6,7 +6,8 @@ const config = require('../config')
 
 const Sheet = function (sheetReference) {
   var self = {}
-  const featureToggles = config().featureToggles
+  const configResult = config()
+  const featureToggles = configResult?.featureToggles || {}
 
   ;(function () {
     var matches = sheetReference.match('https:\\/\\/docs.google.com\\/spreadsheets\\/d\\/(.*?)($|\\/$|\\/.*|\\?.*)')
@@ -35,7 +36,7 @@ const Sheet = function (sheetReference) {
   }
 
   self.createSheetNotFoundError = function () {
-    const exceptionMessage = featureToggles.UIRefresh2022
+    const exceptionMessage = featureToggles?.UIRefresh2022
       ? ExceptionMessages.SHEET_NOT_FOUND_NEW
       : ExceptionMessages.SHEET_NOT_FOUND
     return new SheetNotFoundError(exceptionMessage)

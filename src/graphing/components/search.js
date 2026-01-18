@@ -1,9 +1,17 @@
-const d3 = require('d3')
+// Use dynamic import for d3 since it's ESM
+let d3Promise = null
+async function getD3() {
+  if (!d3Promise) {
+    d3Promise = import('d3').then(m => m.default || m)
+  }
+  return d3Promise
+}
 
 const AutoComplete = require('../../util/autoComplete')
 const { selectRadarQuadrant, removeScrollListener } = require('../components/quadrants')
 
-function renderSearch(radarHeader, quadrants) {
+async function renderSearch(radarHeader, quadrants) {
+  const d3 = await getD3()
   const searchContainer = radarHeader.append('div').classed('search-container', true)
 
   searchContainer

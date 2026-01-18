@@ -1,7 +1,16 @@
-const d3 = require('d3')
+// Use dynamic import for d3 since it's ESM
+let d3Promise = null
+async function getD3() {
+  if (!d3Promise) {
+    d3Promise = import('d3').then(m => m.default || m)
+  }
+  return d3Promise
+}
+
 const { constructSheetUrl } = require('../../util/urlUtils')
 
-function renderAlternativeRadars(radarFooter, alternatives, currentSheet) {
+async function renderAlternativeRadars(radarFooter, alternatives, currentSheet) {
+  const d3 = await getD3()
   const alternativesContainer = radarFooter.append('div').classed('alternative-radars', true)
 
   for (let i = 0; alternatives.length > 0; i++) {

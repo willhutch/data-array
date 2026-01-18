@@ -20,7 +20,8 @@ const Sheet = require('./sheet')
 const ExceptionMessages = require('./exceptionMessages')
 const GoogleAuth = require('./googleAuth')
 const config = require('../config')
-const featureToggles = config().featureToggles
+const configResult = config()
+const featureToggles = configResult?.featureToggles || {}
 const { getDocumentOrSheetId, getSheetName } = require('./urlUtils')
 const { getGraphSize, graphConfig, isValidConfig } = require('../graphing/config')
 const InvalidConfigError = require('../exceptions/invalidConfigError')
@@ -79,7 +80,7 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
     radar.setCurrentSheet(currentRadarName)
   }
 
-  const size = featureToggles.UIRefresh2022
+  const size = featureToggles?.UIRefresh2022
     ? getGraphSize()
     : window.innerHeight - 133 < 620
     ? 620
@@ -139,7 +140,7 @@ const plotRadarGraph = function (title, blips, currentRadarName, alternativeRada
   radar.setCurrentSheet(currentRadarName)
 
   const graphSize = window.innerHeight - 133 < 620 ? 620 : window.innerHeight - 133
-  const size = featureToggles.UIRefresh2022 ? getGraphSize() : graphSize
+  const size = featureToggles?.UIRefresh2022 ? getGraphSize() : graphSize
   new GraphingRadar(size, radar).init().plot()
 }
 
@@ -171,8 +172,8 @@ const GoogleSheet = function (sheetReference, sheetName) {
     const all = values
     const header = all.shift()
     var blips = _.map(all, (blip) => new InputSanitizer().sanitizeForProtectedSheet(blip, header))
-    const title = featureToggles.UIRefresh2022 ? documentTitle : documentTitle + ' - ' + sheetName
-    featureToggles.UIRefresh2022
+    const title = featureToggles?.UIRefresh2022 ? documentTitle : documentTitle + ' - ' + sheetName
+    featureToggles?.UIRefresh2022
       ? plotRadarGraph(title, blips, sheetName, sheetNames)
       : plotRadar(title, blips, sheetName, sheetNames)
   }
@@ -219,7 +220,7 @@ const CSVDocument = function (url) {
       .then(createBlips)
       .catch((exception) => {
         const fileNotFoundError = new FileNotFoundError(`Oops! We can't find the CSV file you've entered`)
-        plotErrorMessage(featureToggles.UIRefresh2022 ? fileNotFoundError : exception, 'csv')
+        plotErrorMessage(featureToggles?.UIRefresh2022 ? fileNotFoundError : exception, 'csv')
       })
   }
 
@@ -231,12 +232,12 @@ const CSVDocument = function (url) {
       contentValidator.verifyContent()
       contentValidator.verifyHeaders()
       var blips = _.map(data, new InputSanitizer().sanitize)
-      featureToggles.UIRefresh2022
+      featureToggles?.UIRefresh2022
         ? plotRadarGraph(FileName(url), blips, 'CSV File', [])
         : plotRadar(FileName(url), blips, 'CSV File', [])
     } catch (exception) {
       const invalidContentError = new InvalidContentError(ExceptionMessages.INVALID_CSV_CONTENT)
-      plotErrorMessage(featureToggles.UIRefresh2022 ? invalidContentError : exception, 'csv')
+      plotErrorMessage(featureToggles?.UIRefresh2022 ? invalidContentError : exception, 'csv')
     }
   }
 
@@ -256,7 +257,7 @@ const JSONFile = function (url) {
       .then(createBlips)
       .catch((exception) => {
         const fileNotFoundError = new FileNotFoundError(`Oops! We can't find the JSON file you've entered`)
-        plotErrorMessage(featureToggles.UIRefresh2022 ? fileNotFoundError : exception, 'json')
+        plotErrorMessage(featureToggles?.UIRefresh2022 ? fileNotFoundError : exception, 'json')
       })
   }
 
@@ -267,12 +268,12 @@ const JSONFile = function (url) {
       contentValidator.verifyContent()
       contentValidator.verifyHeaders()
       var blips = _.map(data, new InputSanitizer().sanitize)
-      featureToggles.UIRefresh2022
+      featureToggles?.UIRefresh2022
         ? plotRadarGraph(FileName(url), blips, 'JSON File', [])
         : plotRadar(FileName(url), blips, 'JSON File', [])
     } catch (exception) {
       const invalidContentError = new InvalidContentError(ExceptionMessages.INVALID_JSON_CONTENT)
-      plotErrorMessage(featureToggles.UIRefresh2022 ? invalidContentError : exception, 'json')
+      plotErrorMessage(featureToggles?.UIRefresh2022 ? invalidContentError : exception, 'json')
     }
   }
 
@@ -310,7 +311,7 @@ const Factory = function () {
     }
 
     window.addEventListener('keydown', function (e) {
-      if (featureToggles.UIRefresh2022 && e.key === '/') {
+      if (featureToggles?.UIRefresh2022 && e.key === '/') {
         const inputElement =
           d3.select('input.search-container__input').node() || d3.select('.input-sheet-form input').node()
 
@@ -338,7 +339,7 @@ const Factory = function () {
       sheet = GoogleSheet(paramId, sheetName)
       sheet.init().build()
     } else {
-      if (!featureToggles.UIRefresh2022) {
+      if (!featureToggles?.UIRefresh2022) {
         document.body.style.opacity = '1'
         document.body.innerHTML = ''
         const content = d3.select('body').append('div').attr('class', 'input-sheet')
@@ -366,7 +367,7 @@ function setDocumentTitle() {
 }
 
 function plotLoading(content) {
-  if (!featureToggles.UIRefresh2022) {
+  if (!featureToggles?.UIRefresh2022) {
     document.body.style.opacity = '1'
     document.body.innerHTML = ''
     content = d3.select('body').append('div').attr('class', 'loading').append('div').attr('class', 'input-sheet')
@@ -436,7 +437,7 @@ function plotForm(content) {
 }
 
 function plotErrorMessage(exception, fileType) {
-  if (featureToggles.UIRefresh2022) {
+  if (featureToggles?.UIRefresh2022) {
     showErrorMessage(exception, fileType)
   } else {
     const content = d3.select('body').append('div').attr('class', 'input-sheet')
@@ -460,7 +461,7 @@ function plotErrorMessage(exception, fileType) {
 function plotError(exception, fileType) {
   let message
   let faqMessage = 'Please check <a href="https://www.thoughtworks.com/radar/byor">FAQs</a> for possible solutions.'
-  if (featureToggles.UIRefresh2022) {
+  if (featureToggles?.UIRefresh2022) {
     message = exception.message
     if (exception instanceof SheetNotFoundError) {
       const href = 'https://www.thoughtworks.com/radar/byor'
@@ -490,7 +491,7 @@ function plotError(exception, fileType) {
   document.querySelector('.helper-description > p').style.display = 'block'
   document.querySelector('.input-sheet-form').style.display = 'block'
 
-  if (!featureToggles.UIRefresh2022) {
+  if (!featureToggles?.UIRefresh2022) {
     let homePageURL = window.location.protocol + '//' + window.location.hostname
     homePageURL += window.location.port === '' ? '' : ':' + window.location.port
     const homePage = '<a href=' + homePageURL + '>GO BACK</a>'
@@ -506,7 +507,7 @@ function showErrorMessage(exception, fileType) {
 function plotUnauthorizedErrorMessage() {
   let content
   const helperDescription = d3.select('.helper-description')
-  if (!featureToggles.UIRefresh2022) {
+  if (!featureToggles?.UIRefresh2022) {
     content = d3.select('body').append('div').attr('class', 'input-sheet')
     setDocumentTitle()
 
@@ -534,7 +535,7 @@ function plotUnauthorizedErrorMessage() {
   const errorContainer = container.append('div').attr('class', 'error-container__message')
 
   errorContainer.append('div').append('p').attr('class', 'error-title').html(message)
-  const newUi = featureToggles.UIRefresh2022 ? 'switch-account-button-newui' : 'switch-account-button'
+  const newUi = featureToggles?.UIRefresh2022 ? 'switch-account-button-newui' : 'switch-account-button'
   const button = errorContainer.append('button').attr('class', `button ${newUi}`).text('Switch account')
 
   errorContainer
@@ -548,10 +549,10 @@ function plotUnauthorizedErrorMessage() {
     sheet = GoogleSheet(getDocumentOrSheetId(), getSheetName())
 
     sheet.authenticate(true, false, () => {
-      if (featureToggles.UIRefresh2022 && !sheet.error) {
+      if (featureToggles?.UIRefresh2022 && !sheet.error) {
         helperDescription.style('display', 'block')
         errorContainer.remove()
-      } else if (featureToggles.UIRefresh2022 && sheet.error) {
+      } else if (featureToggles?.UIRefresh2022 && sheet.error) {
         helperDescription.style('display', 'none')
       } else {
         content.remove()

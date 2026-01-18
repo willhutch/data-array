@@ -1,9 +1,17 @@
-const d3 = require('d3')
+// Use dynamic import for d3 since it's ESM
+let d3Promise = null
+async function getD3() {
+  if (!d3Promise) {
+    d3Promise = import('d3').then(m => m.default || m)
+  }
+  return d3Promise
+}
+
 const { selectRadarQuadrant, removeScrollListener } = require('./quadrants')
 const { getRingIdString } = require('../../util/stringUtil')
 const { uiConfig } = require('../config')
 
-function addListItem(quadrantList, name, callback) {
+function addListItem(d3, quadrantList, name, callback) {
   quadrantList
     .append('li')
     .attr('id', `subnav-item-${getRingIdString(name)}`)
@@ -39,7 +47,8 @@ function addListItem(quadrantList, name, callback) {
     })
 }
 
-function renderQuadrantSubnav(radarHeader, quadrants, renderFullRadar) {
+async function renderQuadrantSubnav(radarHeader, quadrants, renderFullRadar) {
+  const d3 = await getD3()
   const subnavContainer = radarHeader.append('nav').classed('quadrant-subnav', true)
 
   const subnavDropdown = subnavContainer
@@ -50,7 +59,7 @@ function renderQuadrantSubnav(radarHeader, quadrants, renderFullRadar) {
   const subnavArrow = subnavDropdown.append('span').classed('quadrant-subnav__dropdown-arrow', true)
 
   const quadrantList = subnavContainer.append('ul').classed('quadrant-subnav__list', true)
-  addListItem(quadrantList, 'All quadrants', renderFullRadar)
+  addListItem(d3, quadrantList, 'All quadrants', renderFullRadar)
   d3.select('li.quadrant-subnav__list-item').classed('active-item', true).select('button').attr('aria-selected', 'true')
 
   subnavDropdown.on('click', function () {
@@ -61,7 +70,7 @@ function renderQuadrantSubnav(radarHeader, quadrants, renderFullRadar) {
   })
 
   quadrants.forEach(function (quadrant) {
-    addListItem(quadrantList, quadrant.quadrant.name(), () =>
+    addListItem(d3, quadrantList, quadrant.quadrant.name(), () =>
       selectRadarQuadrant(quadrant.order, quadrant.startAngle, quadrant.quadrant.name()),
     )
   })

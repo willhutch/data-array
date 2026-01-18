@@ -1,4 +1,5 @@
-require('./stylesheets/base.scss')
+// CSS is imported in pages/_app.js (Next.js requirement)
+// require('./stylesheets/base.scss')
 require('./images/tech-radar-landing-page-wide.png')
 require('./images/tw-logo.png')
 require('./images/favicon.ico')

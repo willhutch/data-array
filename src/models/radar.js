@@ -9,13 +9,14 @@ const _ = {
 
 const Radar = function () {
   const config = require('../config')
-  const featureToggles = config().featureToggles
+  const configResult = config()
+  const featureToggles = configResult?.featureToggles || {}
 
   let self, quadrants, blipNumber, addingQuadrant, alternatives, currentSheetName, rings
 
   blipNumber = 0
   addingQuadrant = 0
-  quadrants = featureToggles.UIRefresh2022
+  quadrants = featureToggles?.UIRefresh2022
     ? [
         { order: 'first', startAngle: 0 },
         { order: 'second', startAngle: -90 },
@@ -85,7 +86,7 @@ const Radar = function () {
   }
 
   self.rings = function () {
-    if (featureToggles.UIRefresh2022) {
+    if (featureToggles?.UIRefresh2022) {
       return rings
     }
 

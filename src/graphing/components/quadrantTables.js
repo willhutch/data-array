@@ -1,9 +1,18 @@
-const d3 = require('d3')
+// Use dynamic import for d3 since it's ESM
+let d3Promise = null
+async function getD3() {
+  if (!d3Promise) {
+    d3Promise = import('d3').then(m => m.default || m)
+  }
+  return d3Promise
+}
+
 const { graphConfig, getScale, uiConfig } = require('../config')
 const { stickQuadrantOnScroll } = require('./quadrants')
 const { removeAllSpaces } = require('../../util/stringUtil')
 
-function fadeOutAllBlips() {
+async function fadeOutAllBlips() {
+  const d3 = await getD3()
   d3.selectAll('g > a.blip-link').attr('opacity', 0.3)
 }
 
@@ -15,13 +24,15 @@ function highlightBlipInTable(selectedBlip) {
   selectedBlip.classed('highlight', true)
 }
 
-function highlightBlipInGraph(blipIdToFocus) {
-  fadeOutAllBlips()
+async function highlightBlipInGraph(blipIdToFocus) {
+  const d3 = await getD3()
+  await fadeOutAllBlips()
   const selectedBlipOnGraph = d3.select(`g > a.blip-link[data-blip-id='${blipIdToFocus}'`)
   fadeInSelectedBlip(selectedBlipOnGraph)
 }
 
-function renderBlipDescription(blip, ring, quadrant, tip, groupBlipTooltipText) {
+async function renderBlipDescription(blip, ring, quadrant, tip, groupBlipTooltipText) {
+  const d3 = await getD3()
   let blipTableItem = d3.select(`.quadrant-table.${quadrant.order} ul[data-ring-order='${ring.order()}']`)
   if (!groupBlipTooltipText) {
     blipTableItem = blipTableItem.append('li').classed('blip-list__item', true)
@@ -152,7 +163,8 @@ function renderBlipDescription(blip, ring, quadrant, tip, groupBlipTooltipText) 
     .on('click', blipClick)
 }
 
-function renderQuadrantTables(quadrants, rings) {
+async function renderQuadrantTables(quadrants, rings) {
+  const d3 = await getD3()
   const radarContainer = d3.select('#radar')
 
   const quadrantTablesContainer = radarContainer.append('div').classed('quadrant-table__container', true)
