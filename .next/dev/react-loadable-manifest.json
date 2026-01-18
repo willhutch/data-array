@@ -1,0 +1,62 @@
+{
+  "src/graphing/components/alternativeRadars.js -> d3": {
+    "id": "src/graphing/components/alternativeRadars.js -> d3",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_d3_src_index_js.js"
+    ]
+  },
+  "src/graphing/components/banner.js -> d3": {
+    "id": "src/graphing/components/banner.js -> d3",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_d3_src_index_js.js"
+    ]
+  },
+  "src/graphing/components/quadrantSubnav.js -> d3": {
+    "id": "src/graphing/components/quadrantSubnav.js -> d3",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_d3_src_index_js.js"
+    ]
+  },
+  "src/graphing/components/quadrantTables.js -> d3": {
+    "id": "src/graphing/components/quadrantTables.js -> d3",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_d3_src_index_js.js"
+    ]
+  },
+  "src/graphing/components/quadrants.js -> d3": {
+    "id": "src/graphing/components/quadrants.js -> d3",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_d3_src_index_js.js"
+    ]
+  },
+  "src/graphing/components/search.js -> d3": {
+    "id": "src/graphing/components/search.js -> d3",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_d3_src_index_js.js"
+    ]
+  },
+  "src/graphing/pdfPage.js -> d3": {
+    "id": "src/graphing/pdfPage.js -> d3",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_d3_src_index_js.js"
+    ]
+  },
+  "src/graphing/radar.js -> d3": {
+    "id": "src/graphing/radar.js -> d3",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_d3_src_index_js.js"
+    ]
+  },
+  "src/graphing/radar.js -> d3-tip": {
+    "id": "src/graphing/radar.js -> d3-tip",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_d3-tip_index_js.js"
+    ]
+  },
+  "src/util/factoryExports.js -> d3": {
+    "id": "src/util/factoryExports.js -> d3",
+    "files": [
+      "static/chunks/_pages-dir-browser_node_modules_d3_src_index_js.js"
+    ]
+  }
+}
