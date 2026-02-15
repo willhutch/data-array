@@ -210,20 +210,32 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { documentId, sheetId, sheetName } = req.method === 'GET' ? req.query : req.body
+    const { documentId, sheetId, sheetName, radarId } = req.method === 'GET' ? req.query : req.body
     let sourceUrl = documentId || sheetId
 
     // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'pages/api/data/index.js:190',message:'API handler called',data:{method:req.method,documentId,sheetId,sheetName,hasSourceUrl:!!sourceUrl,sourceUrl:sourceUrl?.substring(0,100)},timestamp:Date.now()})}).catch(()=>{});
+    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'pages/api/data/index.js:190',message:'API handler called',data:{method:req.method,documentId,sheetId,sheetName,radarId,hasSourceUrl:!!sourceUrl,sourceUrl:sourceUrl?.substring(0,100)},timestamp:Date.now()})}).catch(()=>{});
     // #endregion
 
-    // If no source URL provided, use the default from config
+    // If no source URL provided, check for radarId or use default from config
     if (!sourceUrl) {
       const configResult = config()
-      sourceUrl = configResult?.dataSource
+      
+      // If radarId is provided, use the corresponding data source
+      if (radarId && configResult?.radars) {
+        const selectedRadar = configResult.radars.find((r) => r.id === radarId)
+        if (selectedRadar) {
+          sourceUrl = selectedRadar.dataSource
+        }
+      }
+      
+      // Fall back to default data source if still no sourceUrl
+      if (!sourceUrl) {
+        sourceUrl = configResult?.dataSource
+      }
       
       // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'pages/api/data/index.js:197',message:'Using default data source from config',data:{hasConfigResult:!!configResult,dataSource:configResult?.dataSource?.substring(0,100)},timestamp:Date.now()})}).catch(()=>{});
+      fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'pages/api/data/index.js:197',message:'Using data source from config',data:{hasConfigResult:!!configResult,radarId,dataSource:sourceUrl?.substring(0,100)},timestamp:Date.now()})}).catch(()=>{});
       // #endregion
       
       if (!sourceUrl) {
