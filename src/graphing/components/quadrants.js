@@ -193,7 +193,7 @@ async function selectRadarQuadrant(order, startAngle, name) {
 
     prevLeft = d3.select('#radar-plot').style('left')
     prevTop = d3.select('#radar-plot').style('top')
-    stickQuadrantOnScroll()
+    await stickQuadrantOnScroll()
   } else {
     radarLegendsContainer.style('left', `${window.innerWidth / 2 - getElementWidth(radarLegendsContainer) / 2}px`)
   }
@@ -549,8 +549,9 @@ function quadrantScrollHandler(
   }
 }
 
-function stickQuadrantOnScroll() {
+async function stickQuadrantOnScroll() {
   if (!scrollFlag) {
+    const d3 = await getD3()
     const scale = getScale()
 
     const radarContainer = d3.select('#radar')
