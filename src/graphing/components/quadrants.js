@@ -326,11 +326,21 @@ function renderRadarQuadrantName(quadrant, parentGroup, tip) {
 
 async function renderRadarQuadrants(size, svg, quadrant, rings, ringCalculator, tip) {
   const d3 = await getD3()
+  // Create wrapper functions that use the already-loaded d3 instance
+  const mouseoverHandler = async () => {
+    const d3Lib = await getD3()
+    d3Lib.select('.quadrant-group-' + quadrant.order).style('opacity', 1)
+    d3Lib.selectAll('.quadrant-group:not(.quadrant-group-' + quadrant.order + ')').style('opacity', 0.3)
+  }
+  const mouseoutHandler = async () => {
+    const d3Lib = await getD3()
+    d3Lib.selectAll('.quadrant-group:not(.quadrant-group-' + quadrant.order + ')').style('opacity', 1)
+  }
   const quadrantGroup = svg
     .append('g')
     .attr('class', 'quadrant-group quadrant-group-' + quadrant.order)
-    .on('mouseover', mouseoverQuadrant.bind({}, quadrant.order))
-    .on('mouseout', mouseoutQuadrant.bind({}, quadrant.order))
+    .on('mouseover', mouseoverHandler)
+    .on('mouseout', mouseoutHandler)
     .on('click', () => { selectRadarQuadrant(quadrant.order, quadrant.startAngle, quadrant.quadrant.name()) })
     .on('keydown', function (e) {
       if (e.key === 'Enter') { selectRadarQuadrant(quadrant.order, quadrant.startAngle, quadrant.quadrant.name()) }
@@ -458,12 +468,14 @@ async function renderMobileView(quadrant) {
   }
 }
 
-function mouseoverQuadrant(order) {
+async function mouseoverQuadrant(order) {
+  const d3 = await getD3()
   d3.select('.quadrant-group-' + order).style('opacity', 1)
   d3.selectAll('.quadrant-group:not(.quadrant-group-' + order + ')').style('opacity', 0.3)
 }
 
-function mouseoutQuadrant(order) {
+async function mouseoutQuadrant(order) {
+  const d3 = await getD3()
   d3.selectAll('.quadrant-group:not(.quadrant-group-' + order + ')').style('opacity', 1)
 }
 

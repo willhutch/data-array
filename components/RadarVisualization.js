@@ -1,48 +1,77 @@
 import { useEffect, useRef } from 'react'
 
+// Module-level flag that persists across component remounts (for React StrictMode)
+let plotInProgress = false
+let hasPlotted = false
+
 export default function RadarVisualization({ data }) {
   const containerRef = useRef(null)
+  const lastDataRef = useRef(null)
 
   useEffect(() => {
-    if (!data || typeof window === 'undefined') return
+    if (!data || typeof window === 'undefined') {
+      return
+    }
+
+    // Reset flags if data changed (allows re-plotting when data updates)
+    if (lastDataRef.current !== data) {
+      hasPlotted = false
+      plotInProgress = false
+      lastDataRef.current = data
+    }
+
+    // Check for existing SVG synchronously before starting (most reliable check)
+    const radarElement = document.getElementById('radar')
+    if (radarElement) {
+      const existingSvg = radarElement.querySelector('svg#radar-plot')
+      if (existingSvg) {
+        return
+      }
+    }
+
+    // Prevent duplicate plotting - check module-level flag (persists across remounts)
+    if (hasPlotted || plotInProgress) {
+      return
+    }
+
+    // Set flag synchronously BEFORE async function to prevent race condition
+    plotInProgress = true
 
     // Dynamically import the factory exports and plot radar
     const loadAndPlot = async () => {
       try {
         const { plotRadarGraph } = require('../src/util/factoryExports')
 
-        // Clear any existing radar
+        // Double-check SVG doesn't exist (in case it was created between checks)
         const radarElement = document.getElementById('radar')
         if (radarElement) {
+          const existingSvg = radarElement.querySelector('svg#radar-plot')
+          if (existingSvg) {
+            plotInProgress = false
+            hasPlotted = true
+            return
+          }
           radarElement.innerHTML = ''
         }
 
         // Ensure the radar container exists
         if (!radarElement) {
-          console.error('Radar container not found')
+          plotInProgress = false
           return
         }
 
         // Plot the radar using existing factory logic
         // The data structure should match: { title, blips, sheetName, sheetNames }
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/RadarVisualization.js:28',message:'About to call plotRadarGraph',data:{hasData:!!data,hasBlips:!!data?.blips,blipCount:data?.blips?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'G'})}).catch(()=>{});
-        // #endregion
         await plotRadarGraph(data.title, data.blips, data.sheetName, data.sheetNames || [])
+        hasPlotted = true
       } catch (error) {
-        // #region agent log
-        fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'components/RadarVisualization.js:31',message:'Error in plotRadarGraph',data:{errorMessage:error.message,errorStack:error.stack,errorName:error.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'H'})}).catch(()=>{});
-        // #endregion
         console.error('Error plotting radar:', error)
+      } finally {
+        plotInProgress = false
       }
     }
 
     loadAndPlot()
-
-    // Cleanup function
-    return () => {
-      // Optional: cleanup if needed
-    }
   }, [data])
 
   return (

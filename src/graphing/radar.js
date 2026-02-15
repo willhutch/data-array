@@ -23,13 +23,7 @@ const RingCalculator = require('../util/ringCalculator')
 const AutoComplete = require('../util/autoComplete')
 const config = require('../config')
 const configResult = config()
-// #region agent log
-fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/graphing/radar.js:25',message:'Config result check',data:{hasFeatureToggles:'featureToggles' in configResult,configKeys:Object.keys(configResult),featureTogglesType:typeof configResult.featureToggles},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-// #endregion
 const featureToggles = configResult?.featureToggles || {}
-// #region agent log
-fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/graphing/radar.js:26',message:'FeatureToggles check',data:{isUndefined:featureToggles===undefined,isNull:featureToggles===null,hasUIRefresh:'UIRefresh2022' in (featureToggles||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
-// #endregion
 const { plotRadarBlips } = require('./blips')
 const { graphConfig, getGraphSize } = require('./config')
 
@@ -77,9 +71,6 @@ const Radar = function (size, radar) {
       endY = startY
       startY = aux
     }
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/graphing/radar.js:73',message:'Before accessing UIRefresh2022',data:{featureTogglesUndefined:featureToggles===undefined,featureTogglesNull:featureToggles===null,featureTogglesType:typeof featureToggles},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
     const strokeWidth = featureToggles?.UIRefresh2022 ? graphConfig.quadrantsGap : 10
 
     quadrantGroup
@@ -678,13 +669,15 @@ const Radar = function (size, radar) {
       )
   }
 
-  function mouseoverQuadrant(order) {
-    d3.select('.quadrant-group-' + order).style('opacity', 1)
-    d3.selectAll('.quadrant-group:not(.quadrant-group-' + order + ')').style('opacity', 0.3)
+  async function mouseoverQuadrant(order) {
+    const d3Lib = d3 || await getD3()
+    d3Lib.select('.quadrant-group-' + order).style('opacity', 1)
+    d3Lib.selectAll('.quadrant-group:not(.quadrant-group-' + order + ')').style('opacity', 0.3)
   }
 
-  function mouseoutQuadrant(order) {
-    d3.selectAll('.quadrant-group:not(.quadrant-group-' + order + ')').style('opacity', 1)
+  async function mouseoutQuadrant(order) {
+    const d3Lib = d3 || await getD3()
+    d3Lib.selectAll('.quadrant-group:not(.quadrant-group-' + order + ')').style('opacity', 1)
   }
 
   function hideTooltipOnScroll(tip) {
