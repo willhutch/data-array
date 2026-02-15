@@ -4,25 +4,10 @@ require('jquery-ui/ui/widgets/autocomplete')
 const config = require('../config')
 let configResult
 let featureToggles
-// #region agent log
-if (typeof fetch !== 'undefined') {
-  fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/util/autoComplete.js:7',message:'Module initialization start',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'M'})}).catch(()=>{});
-}
-// #endregion
 try {
   configResult = config()
-  // #region agent log
-  if (typeof fetch !== 'undefined') {
-    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/util/autoComplete.js:11',message:'After config() call',data:{hasConfigResult:!!configResult,configResultType:typeof configResult,hasFeatureToggles:configResult && 'featureToggles' in configResult},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'M'})}).catch(()=>{});
-  }
-  // #endregion
   featureToggles = (configResult && configResult.featureToggles) ? configResult.featureToggles : {}
 } catch (e) {
-  // #region agent log
-  if (typeof fetch !== 'undefined') {
-    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/util/autoComplete.js:17',message:'Config initialization error',data:{errorMessage:e.message,errorName:e.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'M'})}).catch(()=>{});
-  }
-  // #endregion
   configResult = null
   featureToggles = {}
 }
@@ -30,11 +15,6 @@ try {
 if (!featureToggles || typeof featureToggles !== 'object') {
   featureToggles = {}
 }
-// #region agent log
-if (typeof fetch !== 'undefined') {
-  fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/util/autoComplete.js:24',message:'Module initialization complete',data:{featureTogglesUndefined:featureToggles===undefined,featureTogglesNull:featureToggles===null,featureTogglesType:typeof featureToggles,isObject:typeof featureToggles==='object',hasUIRefresh:'UIRefresh2022' in (featureToggles||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run2',hypothesisId:'M'})}).catch(()=>{});
-}
-// #endregion
 
 $.widget('custom.radarcomplete', $.ui.autocomplete, {
   _create: function () {
@@ -67,11 +47,6 @@ const AutoComplete = (el, quadrants, cb) => {
       featureTogglesUndefined: featureToggles === undefined
     })
   }
-  // #region agent log
-  if (typeof fetch !== 'undefined') {
-    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/util/autoComplete.js:30',message:'AutoComplete called',data:{featureTogglesUndefined:featureToggles===undefined,featureTogglesNull:featureToggles===null,featureTogglesType:typeof featureToggles,hasUIRefresh:'UIRefresh2022' in (featureToggles||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'K'})}).catch(()=>{});
-  }
-  // #endregion
   const blips = quadrants.reduce((acc, quadrant) => {
     return [...acc, ...quadrant.quadrant.blips().map((blip) => ({ blip, quadrant }))]
   }, [])
@@ -88,11 +63,6 @@ const AutoComplete = (el, quadrants, cb) => {
       safeFeatureToggles = {}
     }
   }
-  // #region agent log
-  if (typeof fetch !== 'undefined') {
-    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/util/autoComplete.js:47',message:'After safeFeatureToggles setup',data:{safeFeatureTogglesUndefined:safeFeatureToggles===undefined,safeFeatureTogglesType:typeof safeFeatureToggles,hasUIRefresh:safeFeatureToggles && 'UIRefresh2022' in safeFeatureToggles},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'L'})}).catch(()=>{});
-  }
-  // #endregion
   // Console log for debugging - will show in browser console
   if (typeof console !== 'undefined') {
     console.log('[autoComplete.js] safeFeatureToggles check:', {

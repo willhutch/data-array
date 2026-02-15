@@ -21,9 +21,6 @@ const GraphingRadar = require('../graphing/radar')
 const { getGraphSize, graphConfig } = require('../graphing/config')
 const config = require('../config')
 const configResult = config()
-// #region agent log
-fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/util/factoryExports.js:23',message:'FactoryExports config check',data:{hasFeatureToggles:'featureToggles' in configResult,configKeys:Object.keys(configResult)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-// #endregion
 const featureToggles = configResult?.featureToggles || {}
 
 function validateInputQuadrantOrRingName(allQuadrantsOrRings, quadrantOrRing) {
@@ -34,11 +31,6 @@ function validateInputQuadrantOrRingName(allQuadrantsOrRings, quadrantOrRing) {
 }
 
 const plotRadarGraph = async function (title, blips, currentRadarName, alternativeRadars) {
-  // #region agent log
-  if (typeof fetch !== 'undefined') {
-    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/util/factoryExports.js:36',message:'plotRadarGraph entry',data:{hasTitle:!!title,hasBlips:!!blips,featureTogglesUndefined:featureToggles===undefined,featureTogglesType:typeof featureToggles,hasUIRefresh:'UIRefresh2022' in (featureToggles||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'I'})}).catch(()=>{});
-  }
-  // #endregion
   const d3 = await getD3()
   
   if (typeof document !== 'undefined') {
@@ -87,11 +79,6 @@ const plotRadarGraph = async function (title, blips, currentRadarName, alternati
   radar.setCurrentSheet(currentRadarName)
 
   const graphSize = typeof window !== 'undefined' && window.innerHeight - 133 < 620 ? 620 : window.innerHeight - 133
-  // #region agent log
-  if (typeof fetch !== 'undefined') {
-    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/util/factoryExports.js:85',message:'Before accessing featureToggles.UIRefresh2022',data:{featureTogglesUndefined:featureToggles===undefined,featureTogglesNull:featureToggles===null,featureTogglesType:typeof featureToggles,hasUIRefresh:'UIRefresh2022' in (featureToggles||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'J'})}).catch(()=>{});
-  }
-  // #endregion
   const size = featureToggles?.UIRefresh2022 ? getGraphSize() : graphSize
   const graphingRadar = new GraphingRadar(size, radar)
   await graphingRadar.init()

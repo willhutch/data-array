@@ -24,10 +24,6 @@ function getFileName(url) {
 async function fetchGoogleSheetData(sheetId, sheetName = null) {
   const API_KEY = process.env.API_KEY
 
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'pages/api/data/index.js:28',message:'Starting fetchGoogleSheetData',data:{sheetId,hasApiKey:!!API_KEY},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
-  // #endregion
-
   try {
     // For public Google Sheets, use the API directly with API key
     // This is simpler and more reliable than googleapis for public sheets
@@ -64,9 +60,6 @@ async function fetchGoogleSheetData(sheetId, sheetName = null) {
     const dataResult = await dataResponse.json()
     const values = dataResult.values
 
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'pages/api/data/index.js:59',message:'Got spreadsheet data',data:{hasValues:!!values,valueCount:values?.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
-    // #endregion
     if (!values || values.length === 0) {
       throw new MalformedDataError(ExceptionMessages.MISSING_CONTENT)
     }
@@ -89,10 +82,6 @@ async function fetchGoogleSheetData(sheetId, sheetName = null) {
       sheetNames,
     }
   } catch (error) {
-    // #region agent log
-    fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'pages/api/data/index.js:79',message:'Error in fetchGoogleSheetData',data:{errorCode:error.code,errorMessage:error.message,errorType:error.constructor.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-    // #endregion
-
     if (error instanceof SheetNotFoundError || error instanceof MalformedDataError || error instanceof InvalidContentError) {
       throw error
     }
@@ -188,10 +177,6 @@ async function fetchJSONData(url) {
 
 // Main API handler
 export default async function handler(req, res) {
-  // #region agent log
-  fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'pages/api/data/index.js:173',message:'API handler called',data:{method:req.method,hasDocumentId:!!req.query.documentId,hasSheetId:!!req.query.sheetId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'E'})}).catch(()=>{});
-  // #endregion
-
   if (req.method !== 'GET' && req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' })
   }
@@ -214,11 +199,6 @@ export default async function handler(req, res) {
     } else {
       // Assume it's a Google Sheet
       const extractedSheetId = extractSheetId(sourceUrl)
-      
-      // #region agent log
-      fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'pages/api/data/index.js:195',message:'About to fetch Google Sheet',data:{extractedSheetId,sourceUrl},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'F'})}).catch(()=>{});
-      // #endregion
-      
       result = await fetchGoogleSheetData(extractedSheetId, sheetName)
     }
 

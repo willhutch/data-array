@@ -10,9 +10,6 @@ async function getD3() {
 const config = require('../../config')
 const { addPdfCoverTitle } = require('../pdfPage')
 const configResult = config()
-// #region agent log
-fetch('http://127.0.0.1:7242/ingest/c55d8f9b-e738-4e94-a1fc-550ceba6989a',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'src/graphing/components/banner.js:12',message:'Banner config check',data:{hasFeatureToggles:'featureToggles' in configResult,configKeys:Object.keys(configResult)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
-// #endregion
 const featureToggles = configResult?.featureToggles || {}
 
 async function renderBanner(renderFullRadar) {

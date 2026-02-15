@@ -62,7 +62,6 @@ export default function Home() {
         <link
           rel="stylesheet"
           href="https://rsms.me/inter/inter.css"
-          integrity="sha512-byor"
           crossOrigin="anonymous"
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -98,6 +97,12 @@ export default function Home() {
         )}
 
         {data && <RadarVisualization data={data} />}
+        
+        {!loading && !error && !data && (
+          <div className="helper-description home-page">
+            <p>No data loaded. Please provide a Google Sheet, CSV, or JSON URL.</p>
+          </div>
+        )}
       </main>
     </>
   )
