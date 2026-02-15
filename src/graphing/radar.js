@@ -545,12 +545,10 @@ const Radar = function (size, radar) {
 
     d3.select('.quadrant-subnav__dropdown-selector').text('All quadrants')
 
-    d3tip()
-      .attr('class', 'd3-tip')
-      .html(function (text) {
-        return text
-      })
-      .hide()
+    // Hide tip if it exists
+    if (tip) {
+      tip.hide().style('left', 0).style('top', 0)
+    }
 
     d3.selectAll('g.blip-link').attr('opacity', 1.0)
 
