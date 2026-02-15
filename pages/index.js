@@ -10,13 +10,12 @@ export default function Home() {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    // Get documentId or sheetId from query params
+    // Get documentId or sheetId from query params (optional - will use default from backend if not provided)
     const { documentId, sheetId, sheetName } = router.query
     const sourceUrl = documentId || sheetId
 
-    if (sourceUrl) {
-      fetchRadarData(sourceUrl, sheetName)
-    }
+    // Always fetch data - if no sourceUrl, backend will use default from config
+    fetchRadarData(sourceUrl, sheetName)
   }, [router.query])
 
   const fetchRadarData = async (sourceUrl, sheetName) => {
@@ -25,6 +24,7 @@ export default function Home() {
 
     try {
       const params = new URLSearchParams()
+      // Only add documentId if provided (otherwise backend uses default from config)
       if (sourceUrl) {
         params.append('documentId', sourceUrl)
       }
@@ -32,7 +32,9 @@ export default function Home() {
         params.append('sheetName', sheetName)
       }
 
-      const response = await fetch(`/api/data?${params.toString()}`)
+      // Build URL - if no params, just call /api/data (backend will use default)
+      const apiUrl = params.toString() ? `/api/data?${params.toString()}` : '/api/data'
+      const response = await fetch(apiUrl)
       const result = await response.json()
 
       if (!response.ok) {
@@ -100,7 +102,7 @@ export default function Home() {
         
         {!loading && !error && !data && (
           <div className="helper-description home-page">
-            <p>No data loaded. Please provide a Google Sheet, CSV, or JSON URL.</p>
+            <p>Loading radar data...</p>
           </div>
         )}
       </main>

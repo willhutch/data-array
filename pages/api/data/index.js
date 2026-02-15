@@ -6,6 +6,7 @@ const SheetNotFoundError = require('@/exceptions/sheetNotFoundError')
 const InvalidContentError = require('@/exceptions/invalidContentError')
 const MalformedDataError = require('@/exceptions/malformedDataError')
 const ExceptionMessages = require('@/util/exceptionMessages')
+const config = require('@/config')
 
 // Helper to extract sheet ID from URL
 function extractSheetId(sheetReference) {
@@ -183,10 +184,16 @@ export default async function handler(req, res) {
 
   try {
     const { documentId, sheetId, sheetName } = req.method === 'GET' ? req.query : req.body
-    const sourceUrl = documentId || sheetId
+    let sourceUrl = documentId || sheetId
 
+    // If no source URL provided, use the default from config
     if (!sourceUrl) {
-      return res.status(400).json({ error: 'Missing documentId or sheetId parameter' })
+      const configResult = config()
+      sourceUrl = configResult?.dataSource
+      
+      if (!sourceUrl) {
+        return res.status(400).json({ error: 'No data source configured. Please set DATA_SOURCE environment variable or provide documentId/sheetId parameter.' })
+      }
     }
 
     let result
