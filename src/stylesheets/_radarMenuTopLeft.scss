@@ -1,0 +1,118 @@
+@import 'colors';
+@import 'layout';
+
+.radar-menu-top-left {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1000;
+  font-size: 1rem;
+  background-color: $mist;
+  border: 1px solid $mist-s20;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+
+  &__dropdown {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    cursor: pointer;
+    user-select: none;
+    font-weight: 600;
+
+    &:hover {
+      background-color: $mist-light;
+    }
+
+    &:focus {
+      outline: 2px solid $flamingo;
+      outline-offset: -2px;
+    }
+  }
+
+  &__selector {
+    flex: 1;
+  }
+
+  &__arrow {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid $flamingo;
+    margin-left: 8px;
+    transition: transform 0.2s ease;
+
+    &.rotate {
+      transform: rotate(180deg);
+    }
+  }
+
+  &__list {
+    display: none;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid $mist-s20;
+    max-height: 300px;
+    overflow-y: auto;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: $mist;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+    &.show {
+      display: block;
+    }
+  }
+
+  &__list-item {
+    border-bottom: 1px solid $mist-s20;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &.active {
+      background-color: $mist-light;
+    }
+
+    &:hover {
+      background-color: $mist-light;
+    }
+  }
+
+  &__list-item__button {
+    width: 100%;
+    padding: 12px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+    font-weight: inherit;
+
+    &:focus {
+      outline: 2px solid $flamingo;
+      outline-offset: -2px;
+    }
+
+    &[aria-selected='true'] {
+      font-weight: 700;
+      color: $flamingo;
+    }
+  }
+}
+
+// Show list when dropdown is open
+.radar-menu-top-left__dropdown[aria-expanded='true'] + .radar-menu-top-left__list,
+.radar-menu-top-left__dropdown[aria-expanded='true'] ~ .radar-menu-top-left__list {
+  display: block;
+}

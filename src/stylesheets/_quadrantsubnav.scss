@@ -3,6 +3,7 @@
 
 @if $UIRefresh2022 {
   .quadrant-subnav {
+    position: relative;
     font-size: 1.125rem;
     width: 100%;
     background-color: $mist;
@@ -58,6 +59,32 @@
 
       @include media-query-xlarge {
         display: none;
+      }
+    }
+
+    &__sign-out {
+      position: absolute;
+      top: 0;
+      right: 16px;
+      height: $subnavHeight;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border: none;
+      border-radius: 4px;
+      background: none;
+      cursor: pointer;
+      color: inherit;
+      z-index: 1;
+
+      &:hover {
+        background-color: $mist-s20;
+      }
+
+      &:focus {
+        outline: 2px solid $flamingo;
+        outline-offset: -2px;
       }
     }
 

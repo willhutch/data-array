@@ -90,8 +90,12 @@ const plotRadar = function (title, blips, currentRadarName, alternativeRadars) {
 
 function validateInputQuadrantOrRingName(allQuadrantsOrRings, quadrantOrRing) {
   const quadrantOrRingNames = Object.keys(allQuadrantsOrRings)
+  const regexToStripLeadingNumber = /^\d+\.\s*/
   const regexToFixLanguagesAndFrameworks = /(-|\s+)(and)(-|\s+)|\s*(&)\s*/g
-  const formattedInputQuadrant = quadrantOrRing.toLowerCase().replace(regexToFixLanguagesAndFrameworks, ' & ')
+  const formattedInputQuadrant = quadrantOrRing
+    .toLowerCase()
+    .replace(regexToStripLeadingNumber, '')
+    .replace(regexToFixLanguagesAndFrameworks, ' & ')
   return quadrantOrRingNames.find((quadrantOrRing) => quadrantOrRing.toLowerCase() === formattedInputQuadrant)
 }
 

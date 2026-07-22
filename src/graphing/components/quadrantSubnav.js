@@ -10,6 +10,7 @@ async function getD3() {
 const { selectRadarQuadrant, removeScrollListener } = require('./quadrants')
 const { getRingIdString } = require('../../util/stringUtil')
 const { uiConfig } = require('../config')
+const { signOut } = require('next-auth/react')
 
 function addListItem(d3, quadrantList, name, callback) {
   quadrantList
@@ -74,6 +75,23 @@ async function renderQuadrantSubnav(radarHeader, quadrants, renderFullRadar) {
       selectRadarQuadrant(quadrant.order, quadrant.startAngle, quadrant.quadrant.name()),
     )
   })
+
+  subnavContainer
+    .append('button')
+    .classed('quadrant-subnav__sign-out', true)
+    .attr('aria-label', 'Sign out')
+    .attr('title', 'Sign out')
+    .html(
+      '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">' +
+        '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke-linecap="round" stroke-linejoin="round" />' +
+        '<path d="M16 17l5-5-5-5" stroke-linecap="round" stroke-linejoin="round" />' +
+        '<path d="M21 12H9" stroke-linecap="round" stroke-linejoin="round" />' +
+        '</svg>',
+    )
+    .on('click', function (e) {
+      e.stopPropagation()
+      signOut()
+    })
 
   const subnavOffset =
     (window.innerWidth < 1024 ? uiConfig.tabletBannerHeight : uiConfig.bannerHeight) + uiConfig.headerHeight

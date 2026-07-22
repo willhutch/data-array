@@ -1,0 +1,72 @@
+@import 'colors';
+@import 'fonts';
+
+.signin-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+
+  &__card {
+    background-color: $white;
+    border: 1px solid $mist-s20;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    padding: 48px 40px;
+    max-width: 360px;
+    width: 100%;
+    text-align: center;
+  }
+
+  &__title {
+    font-family: 'Bitter', serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: $wave;
+    margin: 0 0 12px;
+  }
+
+  &__subtitle {
+    font-family: $baseFontFamily;
+    font-size: 1rem;
+    font-weight: 400;
+    color: $mist-s30;
+    margin: 0 0 32px;
+    line-height: 1.5;
+  }
+
+  &__google-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 20px;
+    background-color: $white;
+    border: 1px solid $mist-s20;
+    border-radius: 8px;
+    font-family: $baseFontFamily;
+    font-size: 1rem;
+    font-weight: 600;
+    color: $wave;
+    cursor: pointer;
+    transition: all 0.15s ease-out;
+
+    &:hover {
+      background-color: $mist-light;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transform: translateY(-1px);
+    }
+
+    &:focus {
+      outline: 2px solid $flamingo;
+      outline-offset: 2px;
+    }
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+}

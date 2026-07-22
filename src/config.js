@@ -1,6 +1,6 @@
 const config = () => {
-  const defaultSheetUrl = 'https://docs.google.com/spreadsheets/d/1p0r593ih9l2G1kqpBARtA9eJVom8yckY0ohoWx4FlZE'
-  
+  const defaultSheetUrl = 'https://docs.google.com/spreadsheets/d/1LYKutg73TCQdvpaho9jW6COqoXpcZejkqDZUUCzlZ4Q'
+
   const env = {
     production: {
       featureToggles: {
@@ -12,18 +12,51 @@ const config = () => {
       radars: [
         {
           id: 'radar-1',
-          name: 'Radar 1',
+          name: 'Data Array',
           dataSource: defaultSheetUrl,
+          sheetName: 'Data',
+          status: 'published',
+          allowedUsers: [],
         },
         {
           id: 'radar-2',
-          name: 'Radar 2',
+          name: 'Tech Array',
           dataSource: defaultSheetUrl,
+          sheetName: 'Technology',
+          status: 'published',
+          allowedUsers: [],
         },
         {
           id: 'radar-3',
-          name: 'Radar 3',
+          name: 'AI Array',
           dataSource: defaultSheetUrl,
+          sheetName: 'AI',
+          status: 'published',
+          allowedUsers: [],
+        },
+        {
+          id: 'radar-4',
+          name: 'Data Array (Draft)',
+          dataSource: defaultSheetUrl,
+          sheetName: 'Data (Draft)',
+          status: 'draft',
+          allowedUsers: ['will.j.hutchinson@gmail.com'],
+        },
+        {
+          id: 'radar-5',
+          name: 'Tech Array (Draft)',
+          dataSource: defaultSheetUrl,
+          sheetName: 'Technology (Draft)',
+          status: 'draft',
+          allowedUsers: ['will.j.hutchinson@gmail.com'],
+        },
+        {
+          id: 'radar-6',
+          name: 'AI Array (Draft)',
+          dataSource: defaultSheetUrl,
+          sheetName: 'AI (Draft)',
+          status: 'draft',
+          allowedUsers: ['will.j.hutchinson@gmail.com'],
         },
       ],
     },
@@ -37,18 +70,51 @@ const config = () => {
       radars: [
         {
           id: 'radar-1',
-          name: 'Radar 1',
+          name: 'Data Array',
           dataSource: defaultSheetUrl,
+          sheetName: 'Data',
+          status: 'published',
+          allowedUsers: [],
         },
         {
           id: 'radar-2',
-          name: 'Radar 2',
+          name: 'Tech Array',
           dataSource: defaultSheetUrl,
+          sheetName: 'Technology',
+          status: 'published',
+          allowedUsers: [],
         },
         {
           id: 'radar-3',
-          name: 'Radar 3',
+          name: 'AI Array',
           dataSource: defaultSheetUrl,
+          sheetName: 'AI',
+          status: 'published',
+          allowedUsers: [],
+        },
+        {
+          id: 'radar-4',
+          name: 'Data Array (Draft)',
+          dataSource: defaultSheetUrl,
+          sheetName: 'Data (Draft)',
+          status: 'draft',
+          allowedUsers: ['will.j.hutchinson@gmail.com'],
+        },
+        {
+          id: 'radar-5',
+          name: 'Tech Array (Draft)',
+          dataSource: defaultSheetUrl,
+          sheetName: 'Technology (Draft)',
+          status: 'draft',
+          allowedUsers: ['will.j.hutchinson@gmail.com'],
+        },
+        {
+          id: 'radar-6',
+          name: 'AI Array (Draft)',
+          dataSource: defaultSheetUrl,
+          sheetName: 'AI (Draft)',
+          status: 'draft',
+          allowedUsers: ['will.j.hutchinson@gmail.com'],
         },
       ],
     },
