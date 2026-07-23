@@ -30,7 +30,6 @@ const { graphConfig, getGraphSize } = require('./config')
 const { renderBanner } = require('./components/banner')
 const { renderQuadrantSubnav } = require('./components/quadrantSubnav')
 const { renderSearch } = require('./components/search')
-const { renderAlternativeRadars } = require('./components/alternativeRadars')
 const { renderButtons } = require('./components/buttons')
 const {
   renderRadarQuadrants,
@@ -805,7 +804,6 @@ const Radar = function (size, radar) {
     if (featureToggles?.UIRefresh2022) {
       await renderQuadrantSubnav(radarHeader, quadrants, renderFullRadar)
       await renderSearch(radarHeader, quadrants)
-      await renderAlternativeRadars(radarFooter, alternatives, currentSheet)
       await renderQuadrantTables(quadrants, rings)
       renderButtons(radarFooter)
 
